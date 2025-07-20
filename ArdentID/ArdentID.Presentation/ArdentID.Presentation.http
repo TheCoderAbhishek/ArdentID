@@ -1,0 +1,6 @@
+@ArdentID.Presentation_HostAddress = http://localhost:5182
+
+GET {{ArdentID.Presentation_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
