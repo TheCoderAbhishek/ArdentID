@@ -30,8 +30,13 @@ namespace ArdentID.Presentation
                     b => b.MigrationsAssembly("ArdentID.Infrastructure")));
 
             // Add services to the container.
+            builder.Services.AddScoped<IPasswordService, PasswordService>();
+            builder.Services.AddScoped<IDataProtectionService, DataProtectionService>();
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+            // This is required for the Data Protection API to work
+            builder.Services.AddDataProtection();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
