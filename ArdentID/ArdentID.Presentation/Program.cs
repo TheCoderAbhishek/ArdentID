@@ -1,5 +1,9 @@
+using ArdentID.Application.Interfaces;
+using ArdentID.Application.Services;
 using ArdentID.Infrastructure.Persistence.Data;
+using ArdentID.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace ArdentID.Presentation
 {
@@ -26,11 +30,19 @@ namespace ArdentID.Presentation
                     b => b.MigrationsAssembly("ArdentID.Infrastructure")));
 
             // Add services to the container.
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            Log.Logger = new LoggerConfiguration()
+                                .ReadFrom.Configuration(builder.Configuration)
+                                .CreateLogger();
+
+            builder.Host.UseSerilog();
 
             var app = builder.Build();
 

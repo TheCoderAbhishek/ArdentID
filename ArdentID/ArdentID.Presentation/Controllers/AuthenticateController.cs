@@ -1,10 +1,84 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ArdentID.Application.DTOs.Authentication;
+using ArdentID.Application.Interfaces;
+using ArdentID.Domain.Enums;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ArdentID.Presentation.Controllers
 {
-    [Route("api/[controller]")]
+    /// <summary>
+    /// Handles user authentication, registration, and token management.
+    /// </summary>
+    /// <param name="logger">Logger for logging controller-specific events.</param>
+    /// <param name="authenticationService">The service for handling authentication logic.</param>
+    [Route("v1/[controller]")]
     [ApiController]
-    public class AuthenticateController : ControllerBase
+    public class AuthenticateController(ILogger<AuthenticateController> logger, IAuthenticationService authenticationService) : ControllerBase
     {
+        private readonly ILogger<AuthenticateController> _logger = logger;
+        private readonly IAuthenticationService _authenticationService = authenticationService;
+
+        /// <summary>
+        /// Registers a new user in the system.
+        /// </summary>
+        /// <param name="userRegistrationDto">The data required to register a new user.</param>
+        /// <returns>The ID of the newly created user and a success message.</returns>
+        [ProducesResponseType(typeof(ApiResponse<(Guid, string)>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        [HttpPost]
+        [Route("RegisterUserAsync")]
+        public async Task<IActionResult> RegisterUserAsync([FromBody] UserRegistrationDto userRegistrationDto)
+        {
+            var transactionId = ConstantData.Txn();
+            try
+            {
+                // 1. Call the service layer to perform the registration logic.
+                var (userId, message) = await _authenticationService.RegisterUserAsync(userRegistrationDto);
+
+                // 2. Log the successful registration.
+                _logger.LogInformation("Transaction {Txn}: User with ID {UserId} registered successfully.", transactionId, userId);
+
+                // 3. Create a successful API response using your custom structure.
+                var response = new ApiResponse<(Guid, string)>(
+                    status: ApiResponseStatus.Success,
+                    statusCode: StatusCodes.Status200OK,
+                    responseCode: 2000,
+                    successMessage: message,
+                    txn: transactionId,
+                    returnValue: (userId, message)
+                );
+
+                // 4. Return an HTTP 200 OK response with the payload.
+                return Ok(response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex, "Transaction {Txn}: Registration failed due to a business rule violation: {ErrorMessage}", transactionId, ex.Message);
+
+                var response = new ApiResponse<object>(
+                    status: ApiResponseStatus.Failure,
+                    statusCode: StatusCodes.Status400BadRequest,
+                    responseCode: 4001,
+                    errorMessage: ex.Message,
+                    errorCode: ErrorCode._duplicateUserError,
+                    txn: transactionId
+                );
+                return BadRequest(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Transaction {Txn}: An unexpected error occurred during user registration.", transactionId);
+
+                var response = new ApiResponse<object>(
+                    status: ApiResponseStatus.Failure,
+                    statusCode: StatusCodes.Status500InternalServerError,
+                    responseCode: 5000,
+                    errorMessage: "An unexpected internal server error occurred. Please try again later.",
+                    errorCode: ErrorCode._internalServerError,
+                    txn: transactionId
+                );
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
     }
 }
