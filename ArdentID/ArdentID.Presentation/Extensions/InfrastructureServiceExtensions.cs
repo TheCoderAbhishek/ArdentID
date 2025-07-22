@@ -1,4 +1,5 @@
-﻿using ArdentID.Application.Interfaces;
+﻿using ArdentID.Application.Interfaces.Shared;
+using ArdentID.Application.Interfaces.UserManagement;
 using ArdentID.Application.Services;
 using ArdentID.Infrastructure.Persistence.Data;
 using ArdentID.Infrastructure.Persistence.Repositories;

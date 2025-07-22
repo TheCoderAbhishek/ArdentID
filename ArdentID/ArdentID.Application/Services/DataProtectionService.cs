@@ -1,4 +1,4 @@
-﻿using ArdentID.Application.Interfaces;
+﻿using ArdentID.Application.Interfaces.Shared;
 using Microsoft.AspNetCore.DataProtection;
 
 namespace ArdentID.Application.Services

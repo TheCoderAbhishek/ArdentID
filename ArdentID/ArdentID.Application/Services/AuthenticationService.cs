@@ -1,5 +1,7 @@
 ﻿using ArdentID.Application.DTOs.Authentication;
-using ArdentID.Application.Interfaces;
+using ArdentID.Application.Interfaces.Authentication;
+using ArdentID.Application.Interfaces.Shared;
+using ArdentID.Application.Interfaces.UserManagement;
 using ArdentID.Domain.Entities.UserManagement.UserAggregate;
 using Microsoft.Extensions.Logging;
 
@@ -62,38 +64,38 @@ namespace ArdentID.Application.Services
         /// <summary>
         /// This endpoint for testing Argon2 working as expected or not.
         /// </summary>
-        /// <param name="plainText"></param>
+        /// <param name="loginRequestDto"></param>
         /// <returns>Return true or false.</returns>
-        public async Task<bool> PasswordVerifyAsync(string email, string plainText)
+        public async Task<bool> AuthenticationAsync(LoginRequestDto loginRequestDto)
         {
             try
             {
                 // 1. Find the user by their email address.
-                var user = await _userRepository.GetByEmailAsync(email);
+                var user = await _userRepository.GetByEmailAsync(loginRequestDto.Email);
 
                 // 2. Check if the user exists. If not, verification fails.
                 if (user == null)
                 {
-                    _logger.LogWarning("Login attempt for non-existent email: {Email}", email);
+                    _logger.LogWarning("Login attempt for non-existent email: {Email}", loginRequestDto.Email);
                     return false;
                 }
 
                 // 3. Use the password service to securely verify the password.
-                bool isPasswordCorrect = _passwordService.VerifyPassword(user.PasswordHash, plainText);
+                bool isPasswordCorrect = _passwordService.VerifyPassword(user.PasswordHash, loginRequestDto.Password);
 
                 if (!isPasswordCorrect)
                 {
-                    _logger.LogWarning("Failed login attempt for user: {Email}", email);
+                    _logger.LogWarning("Failed login attempt for user: {Email}", loginRequestDto.Email);
                     return false; // Password does not match.
                 }
 
                 // 4. If password is correct, return the user object.
-                _logger.LogInformation("User {Email} logged in successfully.", email);
+                _logger.LogInformation("User {Email} logged in successfully.", loginRequestDto.Email);
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred during login for email {Email}", email);
+                _logger.LogError(ex, "An error occurred during login for email {Email}", loginRequestDto.Email);
                 throw;
             }
         }

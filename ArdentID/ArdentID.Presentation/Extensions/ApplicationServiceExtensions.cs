@@ -1,4 +1,4 @@
-﻿using ArdentID.Application.Interfaces;
+﻿using ArdentID.Application.Interfaces.Authentication;
 using ArdentID.Application.Services;
 
 namespace ArdentID.Presentation.Extensions

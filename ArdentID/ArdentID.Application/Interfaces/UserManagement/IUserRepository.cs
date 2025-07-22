@@ -1,6 +1,6 @@
 ﻿using ArdentID.Domain.Entities.UserManagement.UserAggregate;
 
-namespace ArdentID.Application.Interfaces
+namespace ArdentID.Application.Interfaces.UserManagement
 {
     public interface IUserRepository
     {

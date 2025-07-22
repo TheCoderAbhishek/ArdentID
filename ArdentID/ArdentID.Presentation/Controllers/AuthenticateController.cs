@@ -1,5 +1,5 @@
 ﻿using ArdentID.Application.DTOs.Authentication;
-using ArdentID.Application.Interfaces;
+using ArdentID.Application.Interfaces.Authentication;
 using ArdentID.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +16,72 @@ namespace ArdentID.Presentation.Controllers
     {
         private readonly ILogger<AuthenticateController> _logger = logger;
         private readonly IAuthenticationService _authenticationService = authenticationService;
+
+        /// <summary>
+        /// Asynchronously verifies if a user's provided password is correct.
+        /// </summary>
+        /// <param name="loginRequestDto">The model email address and password of the user whose password is to be verified.</param>
+        /// <returns>An <see cref="ApiResponse{T}"/> of type <see cref="bool"/>, indicating if the password was successfully verified.</returns>
+        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        [HttpGet]
+        [Route("AuthenticationAsync")]
+        public async Task<IActionResult> AuthenticationAsync(LoginRequestDto loginRequestDto)
+        {
+            var transactionId = HttpContext.TraceIdentifier;
+            try
+            {
+                // 1. Call the service layer to perform the registration logic.
+                var res = await _authenticationService.AuthenticationAsync(loginRequestDto);
+
+                if (res)
+                {
+                    // 2. Log the successful registration.
+                    _logger.LogInformation("Transaction {Txn}: Password verified successfully.", transactionId);
+
+                    // 3. Create a successful API response using your custom structure.
+                    var response = new ApiResponse<bool>(
+                        status: ApiResponseStatus.Success,
+                        statusCode: StatusCodes.Status200OK,
+                        responseCode: 2000,
+                        successMessage: "User authenticate successfully.",
+                        txn: transactionId,
+                        returnValue: res
+                    );
+
+                    // 4. Return an HTTP 200 OK response with the payload.
+                    return Ok(response);
+                }
+                else
+                {
+                    var response = new ApiResponse<bool>(
+                        status: ApiResponseStatus.Failure,
+                        statusCode: StatusCodes.Status400BadRequest,
+                        responseCode: 4000,
+                        errorMessage: "Invalid password provided.",
+                        txn: transactionId,
+                        returnValue: res
+                    );
+
+                    return Ok(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Transaction {Txn}: An unexpected error occurred during user authentication.", transactionId);
+
+                var response = new ApiResponse<object>(
+                    status: ApiResponseStatus.Failure,
+                    statusCode: StatusCodes.Status500InternalServerError,
+                    responseCode: 5000,
+                    errorMessage: "An unexpected internal server error occurred. Please try again later.",
+                    errorCode: ErrorCode._internalServerError,
+                    txn: transactionId
+                );
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
 
         /// <summary>
         /// Registers a new user in the system.
@@ -60,71 +126,6 @@ namespace ArdentID.Presentation.Controllers
                     statusCode: StatusCodes.Status500InternalServerError,
                     responseCode: 5000,
                     errorMessage: $"An unexpected internal server error occurred. Please try again later. {ex.Message}",
-                    errorCode: ErrorCode._internalServerError,
-                    txn: transactionId
-                );
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
-        }
-
-        /// <summary>
-        /// Asynchronously verifies if a user's provided password is correct.
-        /// </summary>
-        /// <param name="email">The email address of the user whose password is to be verified.</param>
-        /// <param name="plainPassword">The plaintext password to check.</param>
-        /// <returns>An <see cref="ApiResponse{T}"/> of type <see cref="bool"/>, indicating if the password was successfully verified.</returns>
-        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
-        [HttpGet]
-        [Route("PasswordVerifyAsync")]
-        public async Task<IActionResult> PasswordVerifyAsync(string email, string plainPassword)
-        {
-            var transactionId = HttpContext.TraceIdentifier;
-            try
-            {
-                // 1. Call the service layer to perform the registration logic.
-                var res = await _authenticationService.PasswordVerifyAsync(email, plainPassword);
-
-                if (res)
-                {
-                    // 2. Log the successful registration.
-                    _logger.LogInformation("Transaction {Txn}: Password verified successfully.", transactionId);
-
-                    // 3. Create a successful API response using your custom structure.
-                    var response = new ApiResponse<bool>(
-                        status: ApiResponseStatus.Success,
-                        statusCode: StatusCodes.Status200OK,
-                        responseCode: 2000,
-                        successMessage: "Password verified successfully.",
-                        txn: transactionId,
-                        returnValue: res
-                    );
-
-                    // 4. Return an HTTP 200 OK response with the payload.
-                    return Ok(response);
-                }
-                else
-                {
-                    var response = new ApiResponse<bool>(
-                        status: ApiResponseStatus.Failure,
-                        statusCode: StatusCodes.Status400BadRequest,
-                        responseCode: 4000,
-                        errorMessage: "Invalid password provided.",
-                        txn: transactionId,
-                        returnValue: res
-                    );
-
-                    return Ok(response);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Transaction {Txn}: An unexpected error occurred during password verification.", transactionId);
-
-                var response = new ApiResponse<object>(
-                    status: ApiResponseStatus.Failure,
-                    statusCode: StatusCodes.Status500InternalServerError,
-                    responseCode: 5000,
-                    errorMessage: "An unexpected internal server error occurred. Please try again later.",
                     errorCode: ErrorCode._internalServerError,
                     txn: transactionId
                 );

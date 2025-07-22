@@ -1,11 +1,11 @@
 ﻿using ArdentID.Application.DTOs.Authentication;
 
-namespace ArdentID.Application.Interfaces
+namespace ArdentID.Application.Interfaces.Authentication
 {
     public interface IAuthenticationService
     {
         Task<(Guid, string)> RegisterUserAsync(UserRegistrationDto registrationDto);
 
-        Task<bool> PasswordVerifyAsync(string email, string plainText);
+        Task<bool> AuthenticationAsync(LoginRequestDto loginRequestDto);
     }
 }

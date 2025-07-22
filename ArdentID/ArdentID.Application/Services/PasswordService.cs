@@ -1,4 +1,4 @@
-﻿using ArdentID.Application.Interfaces;
+﻿using ArdentID.Application.Interfaces.Shared;
 using Konscious.Security.Cryptography;
 using System.Security.Cryptography;
 using System.Text;

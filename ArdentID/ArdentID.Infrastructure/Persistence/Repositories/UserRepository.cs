@@ -1,4 +1,4 @@
-﻿using ArdentID.Application.Interfaces;
+﻿using ArdentID.Application.Interfaces.UserManagement;
 using ArdentID.Domain.Entities.UserManagement.UserAggregate;
 using ArdentID.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;

@@ -1,4 +1,4 @@
-﻿namespace ArdentID.Application.Interfaces
+﻿namespace ArdentID.Application.Interfaces.Shared
 {
     public interface IPasswordService
     {

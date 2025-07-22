@@ -1,5 +1,6 @@
 using ArdentID.Presentation.Extensions;
 using Serilog;
+using System.Reflection;
 
 namespace ArdentID.Presentation
 {
@@ -29,6 +30,13 @@ namespace ArdentID.Presentation
                 .AddInfrastructureServices(builder.Configuration)
                 .AddApplicationServices()
                 .AddPresentationServices();
+
+            builder.Services.AddSwaggerGen(options =>
+            {
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                options.IncludeXmlComments(xmlPath);
+            });
 
             var app = builder.Build();
 
