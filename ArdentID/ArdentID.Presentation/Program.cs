@@ -1,11 +1,4 @@
-using ArdentID.Application.Interfaces;
-using ArdentID.Application.Services;
-using ArdentID.Application.Validators.Authentication;
-using ArdentID.Infrastructure.Persistence.Data;
-using ArdentID.Infrastructure.Persistence.Repositories;
-using ArdentID.Presentation.Filters;
-using FluentValidation;
-using Microsoft.EntityFrameworkCore;
+using ArdentID.Presentation.Extensions;
 using Serilog;
 
 namespace ArdentID.Presentation
@@ -24,42 +17,18 @@ namespace ArdentID.Presentation
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-            // Register the DbContext
-            builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(connectionString,
-                    // This is CRUCIAL for migrations in a separate project
-                    b => b.MigrationsAssembly("ArdentID.Infrastructure")));
-
-            // Add services to the container.
-            builder.Services.AddScoped<IPasswordService, PasswordService>();
-            builder.Services.AddScoped<IDataProtectionService, DataProtectionService>();
-            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
-
-            // This is required for the Data Protection API to work
-            builder.Services.AddDataProtection();
-
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
+            // Configure Seri log
             Log.Logger = new LoggerConfiguration()
-                                .ReadFrom.Configuration(builder.Configuration)
-                                .CreateLogger();
-
+                .ReadFrom.Configuration(builder.Configuration)
+                .CreateLogger();
             builder.Host.UseSerilog();
 
-            // 1. Register your custom validation filter.
-            builder.Services.AddScoped<ValidationFilter>();
-
-            // 2. Add controllers and register the filter globally.
-            builder.Services.AddControllers(options => options.Filters.Add<ValidationFilter>());
-
-            // 3. Scan the Application assembly and register all your validators.
-            builder.Services.AddValidatorsFromAssemblyContaining<UserRegistrationDtoValidator>();
+            // --- Add services to the container using Extension Methods ---
+            builder.Services
+                .AddInfrastructureServices(builder.Configuration)
+                .AddApplicationServices()
+                .AddPresentationServices();
 
             var app = builder.Build();
 
