@@ -11,7 +11,8 @@
         /// <returns>A string representing the transaction ID in the format "yyyyMMddHHmmssfff".</returns>
         public static string Txn()
         {
-            return DateTime.Now.ToString("yyyyMMddHHmmssfff");
+            return "";
+            // return DateTime.Now.ToString("yyyyMMddHHmmssfff");
         }
     }
 }

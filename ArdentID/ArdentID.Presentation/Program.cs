@@ -1,7 +1,10 @@
 using ArdentID.Application.Interfaces;
 using ArdentID.Application.Services;
+using ArdentID.Application.Validators.Authentication;
 using ArdentID.Infrastructure.Persistence.Data;
 using ArdentID.Infrastructure.Persistence.Repositories;
+using ArdentID.Presentation.Filters;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -48,6 +51,15 @@ namespace ArdentID.Presentation
                                 .CreateLogger();
 
             builder.Host.UseSerilog();
+
+            // 1. Register your custom validation filter.
+            builder.Services.AddScoped<ValidationFilter>();
+
+            // 2. Add controllers and register the filter globally.
+            builder.Services.AddControllers(options => options.Filters.Add<ValidationFilter>());
+
+            // 3. Scan the Application assembly and register all your validators.
+            builder.Services.AddValidatorsFromAssemblyContaining<UserRegistrationDtoValidator>();
 
             var app = builder.Build();
 

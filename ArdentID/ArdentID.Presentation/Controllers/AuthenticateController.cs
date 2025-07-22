@@ -29,7 +29,7 @@ namespace ArdentID.Presentation.Controllers
         [Route("RegisterUserAsync")]
         public async Task<IActionResult> RegisterUserAsync([FromBody] UserRegistrationDto userRegistrationDto)
         {
-            var transactionId = ConstantData.Txn();
+            var transactionId = HttpContext.TraceIdentifier;
             try
             {
                 // 1. Call the service layer to perform the registration logic.
@@ -51,20 +51,6 @@ namespace ArdentID.Presentation.Controllers
                 // 4. Return an HTTP 200 OK response with the payload.
                 return Ok(response);
             }
-            catch (InvalidOperationException ex)
-            {
-                _logger.LogWarning(ex, "Transaction {Txn}: Registration failed due to a business rule violation: {ErrorMessage}", transactionId, ex.Message);
-
-                var response = new ApiResponse<object>(
-                    status: ApiResponseStatus.Failure,
-                    statusCode: StatusCodes.Status400BadRequest,
-                    responseCode: 4001,
-                    errorMessage: ex.Message,
-                    errorCode: ErrorCode._duplicateUserError,
-                    txn: transactionId
-                );
-                return BadRequest(response);
-            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Transaction {Txn}: An unexpected error occurred during user registration.", transactionId);
@@ -73,7 +59,7 @@ namespace ArdentID.Presentation.Controllers
                     status: ApiResponseStatus.Failure,
                     statusCode: StatusCodes.Status500InternalServerError,
                     responseCode: 5000,
-                    errorMessage: "An unexpected internal server error occurred. Please try again later.",
+                    errorMessage: $"An unexpected internal server error occurred. Please try again later. {ex.Message}",
                     errorCode: ErrorCode._internalServerError,
                     txn: transactionId
                 );
@@ -92,7 +78,7 @@ namespace ArdentID.Presentation.Controllers
         [Route("PasswordVerifyAsync")]
         public async Task<IActionResult> PasswordVerifyAsync(string email, string plainPassword)
         {
-            var transactionId = ConstantData.Txn();
+            var transactionId = HttpContext.TraceIdentifier;
             try
             {
                 // 1. Call the service layer to perform the registration logic.
