@@ -22,12 +22,12 @@ namespace ArdentID.Presentation.Controllers
         /// </summary>
         /// <param name="loginRequestDto">The model email address and password of the user whose password is to be verified.</param>
         /// <returns>An <see cref="ApiResponse{T}"/> of type <see cref="bool"/>, indicating if the password was successfully verified.</returns>
-        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<LoginResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<LoginResponseDto>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         [HttpPut]
         [Route("AuthenticationAsync")]
-        public async Task<IActionResult> AuthenticationAsync(LoginRequestDto loginRequestDto)
+        public async Task<IActionResult> AuthenticationAsync([FromBody] LoginRequestDto loginRequestDto)
         {
             var transactionId = HttpContext.TraceIdentifier;
             try
@@ -35,13 +35,13 @@ namespace ArdentID.Presentation.Controllers
                 // 1. Call the service layer to perform the registration logic.
                 var res = await _authenticationService.AuthenticationAsync(loginRequestDto);
 
-                if (res)
+                if (res.Result)
                 {
                     // 2. Log the successful registration.
                     _logger.LogInformation("Transaction {Txn}: Password verified successfully.", transactionId);
 
                     // 3. Create a successful API response using your custom structure.
-                    var response = new ApiResponse<bool>(
+                    var response = new ApiResponse<LoginResponseDto>(
                         status: ApiResponseStatus.Success,
                         statusCode: StatusCodes.Status200OK,
                         responseCode: 2000,
@@ -55,7 +55,7 @@ namespace ArdentID.Presentation.Controllers
                 }
                 else
                 {
-                    var response = new ApiResponse<bool>(
+                    var response = new ApiResponse<LoginResponseDto>(
                         status: ApiResponseStatus.Failure,
                         statusCode: StatusCodes.Status400BadRequest,
                         responseCode: 4000,

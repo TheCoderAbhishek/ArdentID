@@ -29,7 +29,7 @@ namespace ArdentID.Presentation
             builder.Services
                 .AddInfrastructureServices(builder.Configuration)
                 .AddApplicationServices()
-                .AddPresentationServices();
+                .AddPresentationServices(builder.Configuration);
 
             builder.Services.AddSwaggerGen(options =>
             {

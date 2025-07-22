@@ -7,43 +7,49 @@ using Microsoft.Extensions.Logging;
 
 namespace ArdentID.Application.Services
 {
-    public class AuthenticationService(ILogger<AuthenticationService> logger, IPasswordService passwordService, IUserRepository userRepository) : IAuthenticationService
+    public class AuthenticationService(ILogger<AuthenticationService> logger, IPasswordService passwordService, IUserRepository userRepository, IJwtTokenGenerator jwtTokenGenerator) : IAuthenticationService
     {
         private readonly ILogger<AuthenticationService> _logger = logger;
         private readonly IPasswordService _passwordService = passwordService;
         private readonly IUserRepository _userRepository = userRepository;
+        private readonly IJwtTokenGenerator _jwtTokenGenerator = jwtTokenGenerator;
 
         /// <summary>
         /// This endpoint for testing Argon2 working as expected or not.
         /// </summary>
         /// <param name="loginRequestDto"></param>
         /// <returns>Return true or false.</returns>
-        public async Task<bool> AuthenticationAsync(LoginRequestDto loginRequestDto)
+        public async Task<LoginResponseDto> AuthenticationAsync(LoginRequestDto loginRequestDto)
         {
+            var response = new LoginResponseDto
+            {
+                Id = Guid.Empty,
+                Result = false,
+                JwtToken = string.Empty
+            };
+
             try
             {
-                // 1. Find the user by their email address.
                 var user = await _userRepository.GetByEmailAsync(loginRequestDto.Email);
-
-                // 2. Check if the user exists. If not, verification fails.
                 if (user == null)
                 {
                     _logger.LogWarning("Login attempt for non-existent email: {Email}", loginRequestDto.Email);
-                    return false;
+                    return response;
                 }
 
-                // 3. Use the password service to securely verify the password.
                 bool isPasswordCorrect = _passwordService.VerifyPassword(user.PasswordHash, loginRequestDto.Password);
-
                 if (!isPasswordCorrect)
                 {
                     _logger.LogWarning("Failed login attempt for user: {Email}", loginRequestDto.Email);
-                    return false; // Password does not match.
+                    return response;
                 }
 
-                // 4. If password is correct, return the user object.
+                response.Id = user.Id;
+                response.Result = true;
+                response.JwtToken = _jwtTokenGenerator.GenerateToken(user);
+
                 _logger.LogInformation("User {Email} logged in successfully.", loginRequestDto.Email);
-                return true;
+                return response;
             }
             catch (Exception ex)
             {

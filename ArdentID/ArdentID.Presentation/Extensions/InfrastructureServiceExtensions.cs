@@ -1,4 +1,5 @@
-﻿using ArdentID.Application.Interfaces.Shared;
+﻿using ArdentID.Application.Interfaces.Authentication;
+using ArdentID.Application.Interfaces.Shared;
 using ArdentID.Application.Interfaces.UserManagement;
 using ArdentID.Application.Services;
 using ArdentID.Infrastructure.Persistence.Data;
@@ -33,6 +34,7 @@ namespace ArdentID.Presentation.Extensions
             // Register Security & Other Services
             services.AddScoped<IPasswordService, PasswordService>();
             services.AddScoped<IDataProtectionService, DataProtectionService>();
+            services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
             // This is required for the Data Protection API to work
             services.AddDataProtection();
