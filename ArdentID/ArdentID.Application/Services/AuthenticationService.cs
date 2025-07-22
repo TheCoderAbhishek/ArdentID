@@ -107,5 +107,31 @@ namespace ArdentID.Application.Services
                 throw;
             }
         }
+
+        /// <summary>
+        /// Asynchronously retrieves all users from the data source as a List.
+        /// </summary>
+        /// <remarks>
+        /// This method fetches all user entities and materializes them into a <see cref="List{T}"/>.
+        /// Use this when you need the concrete functionality of a List, such as accessing elements by index or modifying the collection after retrieval.
+        /// </remarks>
+        /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="List{User}"/> of all users.</returns>
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            return await _userRepository.GetAllUsersAsync();
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves all users from the data source as an IEnumerable.
+        /// </summary>
+        /// <remarks>
+        /// This method returns an <see cref="IEnumerable{T}"/>, which is suitable for scenarios where you only need to iterate over the users.
+        /// It promotes better practice by returning a read-only view of the data and can be more efficient depending on the underlying implementation (e.g., deferred execution).
+        /// </remarks>
+        /// <returns>A task that represents the asynchronous operation. The task result contains an <see cref="IEnumerable{User}"/> of all users.</returns>
+        public async Task<IEnumerable<User>> GetAllUsersEnumAsync()
+        {
+            return await _userRepository.GetAllUsersEnumAsync();
+        }
     }
 }

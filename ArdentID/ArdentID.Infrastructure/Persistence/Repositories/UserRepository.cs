@@ -38,5 +38,23 @@ namespace ArdentID.Infrastructure.Persistence.Repositories
             await _context.SaveChangesAsync();
             return user.Id;
         }
+
+        /// <summary>
+        /// Retrieves all users from the database as a List.
+        /// </summary>
+        /// <returns>A List containing all User entities.</returns>
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            return await _context.Users.ToListAsync();
+        }
+
+        /// <summary>
+        /// Retrieves all users from the database as an IEnumerable.
+        /// </summary>
+        /// <returns>An IEnumerable containing all User entities.</returns>
+        public async Task<IEnumerable<User>> GetAllUsersEnumAsync()
+        {
+            return await _context.Users.ToListAsync();
+        }
     }
 }

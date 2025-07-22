@@ -1,4 +1,5 @@
 ﻿using ArdentID.Application.DTOs.Authentication;
+using ArdentID.Domain.Entities.UserManagement.UserAggregate;
 
 namespace ArdentID.Application.Interfaces.Authentication
 {
@@ -6,5 +7,7 @@ namespace ArdentID.Application.Interfaces.Authentication
     {
         Task<LoginResponseDto> AuthenticationAsync(LoginRequestDto loginRequestDto);
         Task<(Guid, string)> RegisterUserAsync(UserRegistrationDto registrationDto);
+        Task<List<User>> GetAllUsersAsync();
+        Task<IEnumerable<User>> GetAllUsersEnumAsync();
     }
 }
