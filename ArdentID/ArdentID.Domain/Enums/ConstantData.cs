@@ -8,11 +8,10 @@
         /// <summary>
         /// Generates a unique transaction ID based on current time.
         /// </summary>
-        /// <returns>A string representing the transaction ID in the format "yyyyMMddHHmmssfff".</returns>
+        /// <returns>A string representing the transaction ID in the format.</returns>
         public static string Txn()
         {
             return "";
-            // return DateTime.Now.ToString("yyyyMMddHHmmssfff");
         }
     }
 }

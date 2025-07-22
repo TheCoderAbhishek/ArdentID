@@ -25,7 +25,7 @@ namespace ArdentID.Application.Services
                 var existingUser = await _userRepository.GetByEmailAsync(registrationDto.Email);
                 if (existingUser != null)
                 {
-                    _logger.LogError($"A user with this email address already exists. {registrationDto.Email}");
+                    _logger.LogError("A user with this email address already exists. {Email}", registrationDto.Email);
                     throw new InvalidOperationException("A user with this email address already exists.");
                 }
 
