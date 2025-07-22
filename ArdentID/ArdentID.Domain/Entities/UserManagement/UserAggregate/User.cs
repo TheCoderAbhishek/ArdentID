@@ -75,6 +75,18 @@ namespace ArdentID.Domain.Entities.UserManagement.UserAggregate
         /// </summary>
         public DateTime? LastLoginAtUtc { get; set; }
 
+        /// <summary>
+        /// The number of consecutive failed login attempts.
+        /// This is reset to 0 after a successful login.
+        /// </summary>
+        public int AccessFailedCount { get; set; }
+
+        /// <summary>
+        /// The UTC date and time until which the user is locked out.
+        /// A null value means the user is not locked out.
+        /// </summary>
+        public DateTime? LockoutEndUtc { get; set; }
+
         // --- Navigation Properties ---
         public virtual ICollection<UserRole> UserRoles { get; set; } = [];
         public virtual ICollection<Session> Sessions { get; set; } = [];

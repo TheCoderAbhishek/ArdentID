@@ -25,7 +25,7 @@ namespace ArdentID.Presentation.Controllers
         [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        [HttpGet]
+        [HttpPut]
         [Route("AuthenticationAsync")]
         public async Task<IActionResult> AuthenticationAsync(LoginRequestDto loginRequestDto)
         {

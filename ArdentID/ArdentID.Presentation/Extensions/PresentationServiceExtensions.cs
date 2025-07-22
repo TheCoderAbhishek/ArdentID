@@ -24,6 +24,7 @@ namespace ArdentID.Presentation.Extensions
 
             // 3. Scan the Application assembly and register all your validators.
             services.AddValidatorsFromAssemblyContaining<UserRegistrationDtoValidator>();
+            services.AddValidatorsFromAssemblyContaining<LoginRequestDtoValidator>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();

@@ -9,6 +9,8 @@ SELECT TOP (1000) [Id]
       ,[CreatedAtUtc]
       ,[UpdatedAtUtc]
       ,[LastLoginAtUtc]
+      ,[AccessFailedCount]
+      ,[LockoutEndUtc]
   FROM [ArdentID_Dev].[dbo].[Users]
 
 -- Replace 'YourTableName' with your actual table name

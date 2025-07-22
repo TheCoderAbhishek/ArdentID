@@ -16,6 +16,8 @@ namespace ArdentID.Infrastructure.Persistence.Configurations
             builder.Property(u => u.PasswordHash).IsRequired();
             builder.Property(u => u.Status).IsRequired().HasMaxLength(50);
 
+            builder.Property(u => u.AccessFailedCount).HasDefaultValue(0);
+
             // Configure the one-to-many relationship with Session
             builder.HasMany(u => u.Sessions)
                    .WithOne(s => s.User)

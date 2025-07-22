@@ -4,8 +4,7 @@ namespace ArdentID.Application.Interfaces.Authentication
 {
     public interface IAuthenticationService
     {
-        Task<(Guid, string)> RegisterUserAsync(UserRegistrationDto registrationDto);
-
         Task<bool> AuthenticationAsync(LoginRequestDto loginRequestDto);
+        Task<(Guid, string)> RegisterUserAsync(UserRegistrationDto registrationDto);
     }
 }
