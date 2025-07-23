@@ -1,0 +1,10 @@
+{
+  "AccountActivation": {
+    "Subject": "Activate Your ArdentID Account",
+    "Body": "<!DOCTYPE html><html>...</html>"
+  },
+  "PasswordReset": {
+    "Subject": "Your ArdentID Password Reset Code",
+    "Body": "<!DOCTYPE html><html>...</html>"
+  }
+}

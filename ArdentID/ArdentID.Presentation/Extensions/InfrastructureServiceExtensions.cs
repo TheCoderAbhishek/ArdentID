@@ -35,9 +35,15 @@ namespace ArdentID.Presentation.Extensions
             services.AddScoped<IPasswordService, PasswordService>();
             services.AddScoped<IDataProtectionService, DataProtectionService>();
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+            services.AddScoped<IOtpService, OtpService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IEmailTemplateService, EmailTemplateService>();
+            services.AddScoped<IVerificationService, VerificationService>();
 
             // This is required for the Data Protection API to work
             services.AddDataProtection();
+
+            services.AddMemoryCache(); // <-- ADD THIS to enable IMemoryCache
 
             return services;
         }
