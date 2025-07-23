@@ -2,6 +2,7 @@
 using ArdentID.Application.Interfaces.Authentication;
 using ArdentID.Domain.Entities.UserManagement.UserAggregate;
 using ArdentID.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArdentID.Presentation.Controllers
@@ -142,6 +143,7 @@ namespace ArdentID.Presentation.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         [HttpGet]
         [Route("GetAllUsersAsync")]
+        [Authorize]
         public async Task<IActionResult> GetAllUsersAsync()
         {
             var transactionId = HttpContext.TraceIdentifier;
