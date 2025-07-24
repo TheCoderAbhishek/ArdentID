@@ -23,7 +23,7 @@ namespace ArdentID.Application.Services
                 var subject = await _templateService.GetTemplateSubjectAsync(templateKey);
                 var htmlBody = await _templateService.GetTemplateHtmlAsync(templateKey, placeholders);
 
-                // 2. Get SMTP settings from appsettings.json.
+                // 2. Get SMTP settings from app settings.
                 var smtpSettings = _configuration.GetSection("SmtpSettings");
                 var server = smtpSettings["Server"];
                 var port = int.Parse(smtpSettings["Port"]!);

@@ -14,7 +14,12 @@ namespace ArdentID.Application.Services
         private readonly IOtpService _otpService = otpService;
         private readonly IEmailService _emailService = emailService;
 
-        public async Task<string> GenerateAndSendOtpAsync(GenerateOtpRequestDto request)
+        public Task<string> GenerateAndSendOtpAsync(GenerateOtpRequestDto request)
+        {
+            return GenerateAndSendOtpAsync(request, new ArgumentOutOfRangeException(nameof(request.Purpose), "Invalid OTP purpose specified."));
+        }
+
+        public async Task<string> GenerateAndSendOtpAsync(GenerateOtpRequestDto request, Exception argumentOutOfRangeException)
         {
             var user = await _userRepository.GetByEmailAsync(request.Email) ?? throw new InvalidOperationException("User not found.");
             var secretKey = KeyGeneration.GenerateRandomKey(20);
@@ -27,7 +32,7 @@ namespace ArdentID.Application.Services
             {
                 OtpPurpose.EmailConfirmation => "AccountActivation",
                 OtpPurpose.PasswordReset => "PasswordReset",
-                _ => throw new ArgumentOutOfRangeException(nameof(request.Purpose), "Invalid OTP purpose specified.")
+                _ => throw argumentOutOfRangeException
             };
 
             var placeholders = new Dictionary<string, string>
